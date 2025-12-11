@@ -1,0 +1,9 @@
+{
+  "name": "medsahayak-api",
+  "version": "1.0.0",
+  "description": "Backend API for MedSahayak",
+  "main": "index.js",
+  "scripts": {
+    "dev": "vercel dev"
+  }
+}
