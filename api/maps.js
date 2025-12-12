@@ -9,7 +9,26 @@ export default async function handler(req, res) {
   }
 
   try {
-    const { latitude, longitude, severity } = req.body;
+    const { latitude, longitude, severity, address } = req.body;
+
+  // NEW: If address is provided, geocode it first
+  if (address) {
+    const geocodeUrl = `https://maps.googleapis.com/maps/api/geocode/json?address=${encodeURIComponent(address)}&key=${process.env.GOOGLE_MAPS_KEY}`;
+    
+    const geocodeResponse = await fetch(geocodeUrl);
+    const geocodeData = await geocodeResponse.json();
+
+    if (geocodeData.status === 'OK' && geocodeData.results.length > 0) {
+      const location = geocodeData.results[0].geometry.location;
+      return res.status(200).json({
+        latitude: location.lat,
+        longitude: location.lng,
+        formatted_address: geocodeData.results[0].formatted_address
+      });
+    } else {
+      return res.status(404).json({ error: 'Location not found' });
+    }
+  }
 
     if (!latitude || !longitude) {
       return res.status(400).json({ error: 'Missing coordinates' });
